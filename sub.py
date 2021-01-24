@@ -104,7 +104,10 @@ def submit(s: requests.Session, old: dict):
         'old_city': old['old_city'],
         'geo_api_infot': old['geo_api_infot'],
         'date': datetime.now(tz=pytz.timezone("Asia/Shanghai")).strftime("%Y-%m-%d"),
-        'fjsj': old['fjsj'],
+        'fjsj': old['fjsj'],  # 返京时间
+        'ljrq': old['ljrq'],  # 离京日期 add@2021.1.24
+        'qwhd': old['qwhd'],  # 去往何地 add@2021.1.24
+        'chdfj': old['chdfj'],  # 从何地返京 add@2021.1.24
         'jcbhrq': old['jcbhrq'],
         'glksrq': old['glksrq'],
         'fxyy': old['fxyy'],
