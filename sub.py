@@ -69,9 +69,9 @@ def login(s: requests.Session, username, password, cookie_file: Path):
 
     # print(r.text)
     if r.json().get('m') != "操作成功":
-        print(r.text)
         print("登录失败")
-        # message("登录失败") # todo: 发送通知登录失败
+        message(api_key, sender_email, sender_email_passwd, receiver_email, "健康打卡登录失败", "登录失败")
+
     else:
         print("登录成功")
         with open(cookie_file, 'w', encoding='u8') as f:
@@ -143,10 +143,7 @@ def submit(s: requests.Session, old: dict):
 
     if new_daily['szdd'] != '国内':
         msg = "所在地点不是国内，请手动打卡"
-        if api_key != "":
-            message(api_key, msg, new_daily)
-        if sender_email != "" and receiver_email != "":
-            send_email(sender_email, sender_email_passwd, receiver_email, msg, new_daily)
+        message(api_key, sender_email, sender_email_passwd, receiver_email, msg, new_daily)
         return
 
     r = s.post("https://app.ucas.ac.cn/ncov/api/default/save", data=new_daily)
@@ -162,13 +159,20 @@ def submit(s: requests.Session, old: dict):
     else:
         print("打卡失败，错误信息: ", r.json().get("m"))
 
+    message(api_key, sender_email, sender_email_passwd, receiver_email, result.get('m'), new_daily)
+
+
+def message(key, sender, mail_passwd, receiver, subject, msg):
+    """
+    再封装一下 :) 减少调用通知写的代码
+    """
     if api_key != "":
-        message(api_key, result.get('m'), new_daily)
+        send_email(sender, mail_passwd, receiver, subject, msg)
     if sender_email != "" and receiver_email != "":
-        send_email(sender_email, sender_email_passwd, receiver_email, result.get('m'), new_daily)
+        server_chan_message(key, subject, msg)
 
 
-def message(key, title, body):
+def server_chan_message(key, title, body):
     """
     微信通知打卡结果
     """
@@ -177,7 +181,7 @@ def message(key, title, body):
     requests.get(msg_url)
 
 
-def send_email(sender, passwd, receiver, subject, msg):
+def send_email(sender, mail_passwd, receiver, subject, msg):
     """
     邮件通知打卡结果
     """
@@ -192,7 +196,7 @@ def send_email(sender, passwd, receiver, subject, msg):
             smtp_port = 465
             smtp_server = "smtp.qq.com"
         smtp = smtplib.SMTP_SSL(smtp_server, smtp_port)
-        smtp.login(sender, passwd)
+        smtp.login(sender, mail_passwd)
         smtp.sendmail(sender, receiver, body.as_string())
         smtp.quit()
         print("邮件发送成功")
