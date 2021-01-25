@@ -185,9 +185,9 @@ def message(key, sender, mail_passwd, receiver, subject, msg):
     再封装一下 :) 减少调用通知写的代码
     """
     if api_key != "":
-        send_email(sender, mail_passwd, receiver, subject, msg)
-    if sender_email != "" and receiver_email != "":
         server_chan_message(key, subject, msg)
+    if sender_email != "" and receiver_email != "":
+        send_email(sender, mail_passwd, receiver, subject, msg)
 
 
 def server_chan_message(key, title, body):
