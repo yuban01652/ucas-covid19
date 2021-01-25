@@ -1,7 +1,6 @@
 # ucas-covid19
 国科大疫情防控每日填报助手，用于解决忘记填写企业微信中身体状况每日打卡的问题。
 
-**因为网站更新，增加了去往何处等选项，在仓库内代码更新前请手动打卡，以免漏报信息。 预计本周末可以修复，如果最近两天有能够修改代码解决此问题的同学，欢迎PR。** -- 2021年1月21日12:48:52
  
 # 注意
 本人不对因为滥用此程序造成的后果负责，**请在合理且合法的范围内使用本程序**。
@@ -156,6 +155,7 @@ $ crontab -e
 - 感谢 [spwpun](https://github.com/IanSmith123/ucas-covid19/pull/6) 添加了使用 windows 计划任务的操作步骤
 - 感谢 [PrimeMHD ](https://github.com/IanSmith123/ucas-covid19/pull/7) 添加了使用 MacOS 的 crontab 的配置步骤
 - 感谢 [T-winkle](https://github.com/IanSmith123/ucas-covid19/pull/24) 添加了邮件通知打卡结果的功能
+- 感谢 [lizard1998myx](https://github.com/IanSmith123/ucas-covid19/pull/28) 修复了提交信息缺少`去往何处`等字段的问题
 
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png" /></a><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">知识共享署名-非商业性使用-相同方式共享 3.0 未本地化版本许可协议</a>进行许可。
 
