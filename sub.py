@@ -225,11 +225,12 @@ def send_email(sender, mail_passwd, receiver, subject, msg):
 
 
 def report(username, password):
-    cookie_file_name = Path("{}.json".format(hashlib.sha512(username.encode()).hexdigest()[:8]))
     s = requests.Session()
     s.verify = verify_cert  # 不验证证书
     header = {
-        "User-Agent": "Mozilla/5.0 (Linux; Android 10;  AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/66.0.3359.126 MQQBrowser/6.2 TBS/045136 Mobile Safari/537.36 wxwork/3.0.16 MicroMessenger/7.0.1 NetType/WIFI Language/zh"
+        "User-Agent": "Mozilla/5.0 (Linux; Android 10; AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 \
+        Chrome/78.0.3904.62 XWEB/2693 MMWEBSDK/201201 Mobile Safari/537.36 MMWEBID/1300 \
+        MicroMessenger/7.0.22.1820 WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64"
     }
     s.headers.update(header)
 
@@ -238,6 +239,7 @@ def report(username, password):
         print("\r等待{}秒后填报".format(i), end='')
         sleep(1)
 
+    cookie_file_name = Path("{}.json".format(hashlib.sha512(username.encode()).hexdigest()[:8]))
     login(s, username, password, cookie_file_name)
     yesterday = get_daily(s)
     submit(s, yesterday)
