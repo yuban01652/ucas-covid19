@@ -141,9 +141,11 @@ def submit(s: requests.Session, old: dict):
         'app_id': 'ucas'
     }
 
-    if new_daily['szdd'] != '国内':
-        msg = "所在地点不是国内，请手动打卡"
-        message(api_key, sender_email, sender_email_passwd, receiver_email, msg, new_daily)
+    check_data_msg = check_submit_data(new_daily)  # 检查上报结果
+    if check_data_msg is not None:
+        message(api_key, sender_email, sender_email_passwd, receiver_email, "每日健康打卡-{}".format(check_data_msg),
+                "{}".format(new_daily))
+        print("提交数据存在问题，请手动打卡，问题原因： {}".format(check_data_msg))
         return
 
     r = s.post("https://app.ucas.ac.cn/ncov/api/default/save", data=new_daily)
@@ -160,6 +162,22 @@ def submit(s: requests.Session, old: dict):
         print("打卡失败，错误信息: ", r.json().get("m"))
 
     message(api_key, sender_email, sender_email_passwd, receiver_email, result.get('m'), new_daily)
+
+
+def check_submit_data(data: dict):
+    """
+    检查提交数据是否正常
+    """
+    msg = []
+    # 所在地点
+    if data['szdd'] != "国内":
+        msg.append("所在地点不是国内，请手动填报")
+
+    # 体温
+    if int(data['tw']) > 4:
+        msg.append("体温大于 37.3 度 ，请手动填报")
+
+    return ";".join(msg) if msg else None
 
 
 def message(key, sender, mail_passwd, receiver, subject, msg):
