@@ -22,28 +22,31 @@ debug = False
 # 忽略网站的证书错误，这很不安全 :(
 verify_cert = False
 
-# 全局变量
-user = "USERNAME"
-passwd = "PASSWORD"
-api_key = "API_KEY"
+# 全局变量，如果使用自己的服务器运行请根据需要修改 ->以下变量<-
+user = "USERNAME"  # sep 账号
+passwd = "PASSWORD"  # sep 密码
+api_key = "API_KEY"  # 可选， server 酱的通知 api key
 
+# 可选，如果需要邮件通知，那么修改下面五行 :)
 smtp_port = "SMTP_PORT"
 smtp_server = "SMTP_SERVER"
 sender_email = "SENDER_EMAIL"
 sender_email_passwd = "SENDER_EMAIL_PASSWD"
 receiver_email = "RECEIVER_EMAIL"
 
+# 全局变量，使用自己的服务器运行请根据需要修改 ->以上变量<-
+
 # 如果检测到程序在 github actions 内运行，那么读取环境变量中的登录信息
 if os.environ.get('GITHUB_RUN_ID', None):
-    user = os.environ['SEP_USER_NAME']  # sep账号
-    passwd = os.environ['SEP_PASSWD']  # sep密码
-    api_key = os.environ['API_KEY']  # server酱的api，填了可以微信通知打卡结果，不填没影响
+    user = os.environ.get('SEP_USER_NAME', '')  # sep账号
+    passwd = os.environ.get('SEP_PASSWD', '')  # sep密码
+    api_key = os.environ.get('API_KEY', '')  # server酱的api，填了可以微信通知打卡结果，不填没影响
 
-    smtp_port = os.environ['SMTP_PORT']  # 邮件服务器端口，默认为qq smtp服务器端口
-    smtp_server = os.environ['SMTP_SERVER']  # 邮件服务器，默认为qq smtp服务器
-    sender_email = os.environ['SENDER_EMAIL']  # 发送通知打卡通知邮件的邮箱
-    sender_email_passwd = os.environ['SENDER_EMAIL_PASSWD']  # 发送通知打卡通知邮件的邮箱密码
-    receiver_email = os.environ['RECEIVER_EMAIL']  # 接收打卡通知邮件的邮箱
+    smtp_port = os.environ.get('SMTP_PORT', '465')  # 邮件服务器端口，默认为qq smtp服务器端口
+    smtp_server = os.environ.get('SMTP_SERVER', 'smtp.qq.com')  # 邮件服务器，默认为qq smtp服务器
+    sender_email = os.environ.get('SENDER_EMAIL', 'example@example.com')  # 发送通知打卡通知邮件的邮箱
+    sender_email_passwd = os.environ.get('SENDER_EMAIL_PASSWD', "password")  # 发送通知打卡通知邮件的邮箱密码
+    receiver_email = os.environ.get('RECEIVER_EMAIL', 'example@example.com')  # 接收打卡通知邮件的邮箱
 
 
 def login(s: requests.Session, username, password, cookie_file: Path):
@@ -52,7 +55,7 @@ def login(s: requests.Session, username, password, cookie_file: Path):
     # print(r.text)
 
     if cookie_file.exists():
-        cookie = json.loads(cookie_file.read_text())
+        cookie = json.loads(cookie_file.read_text(encoding='utf-8'))
         s.cookies = requests.utils.cookiejar_from_dict(cookie)
         # 测试cookie是否有效
         if get_daily(s) == False:
@@ -73,10 +76,8 @@ def login(s: requests.Session, username, password, cookie_file: Path):
         message(api_key, sender_email, sender_email_passwd, receiver_email, "健康打卡登录失败", "登录失败")
 
     else:
-        print("登录成功")
-        with open(cookie_file, 'w', encoding='u8') as f:
-            f.write(json.dumps(requests.utils.dict_from_cookiejar(r.cookies)))
-            print("cookies 保存完成，文件名为 {}".format(cookie_file))
+        cookie_file.write_text(json.dumps(requests.utils.dict_from_cookiejar(r.cookies), indent=2), encoding='utf-8', )
+        print("登录成功，cookies 保存在文件 {}，下次登录将优先使用cookies".format(cookie_file))
 
 
 def get_daily(s: requests.Session):
