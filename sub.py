@@ -23,9 +23,9 @@ debug = False
 verify_cert = False
 
 # 全局变量，如果使用自己的服务器运行请根据需要修改 ->以下变量<-
-user = "USERNAME"  # sep 账号
-passwd = "PASSWORD"  # sep 密码
-api_key = "API_KEY"  # 可选， server 酱的通知 api key
+user = "ZZZ"  # sep 账号
+passwd = "YYY"  # sep 密码
+api_key = "XXX"  # 可选， server 酱的通知 api key
 
 # 可选，如果需要邮件通知，那么修改下面五行 :)
 smtp_port = "SMTP_PORT"
@@ -81,7 +81,9 @@ def login(s: requests.Session, username, password, cookie_file: Path):
 
 
 def get_daily(s: requests.Session):
-    daily = s.get("https://app.ucas.ac.cn/ncov/api/default/daily?xgh=0&app_id=ucas")
+    # daily = s.get("https://app.ucas.ac.cn/ncov/api/default/daily?xgh=0&app_id=ucas")
+    daily = s.get("https://app.ucas.ac.cn/ucasncov/api/default/daily?xgh=0&app_id=ucas")
+    
     # info = s.get("https://app.ucas.ac.cn/ncov/api/default/index?xgh=0&app_id=ucas")
     if '操作成功' not in daily.text:
         # 会话无效，跳转到了登录页面
@@ -94,52 +96,80 @@ def get_daily(s: requests.Session):
 
 def submit(s: requests.Session, old: dict):
     new_daily = {
+        'date': datetime.now(tz=pytz.timezone("Asia/Shanghai")).strftime("%Y-%m-%d"),
         'realname': old['realname'],
         'number': old['number'],
-        'szgj_api_info': old['szgj_api_info'],
-        'szgj': old['szgj'],
-        'old_sfzx': old['sfzx'],
+        'jzdz': old['jzdz'],
+        'zrzsdd': old['zrzsdd'],
+        # 'szgj_api_info': old['szgj_api_info'],
+        # 'old_sfzx': old['sfzx'],
         'sfzx': old['sfzx'],
-        'szdd': old['szdd'],
-        'ismoved': 0,  # 如果前一天位置变化这个值会为1，第二天仍然获取到昨天的1，而事实上位置是没变化的，所以置0
+        'dqszdd': old['dqszdd'],
+        'geo_api_infot': old['geo_api_infot'],
+        'szgj': '',
+        'szgj_select_info': {'id': 0, 'name': ''},
+        'geo_api_info': old['geo_api_info'],
+        'dqsfzzgfxdq': old['dqsfzzgfxdq'],
+        'zgfxljs': old['zgfxljs'], 
+        'tw': old['tw'], 
+        'sffrzz': old['sffrzz'], 
+        'dqqk1': old['dqqk1'], 
+        'dqqk1qt': old['dqqk1qt'], 
+        'dqqk2': old['dqqk2'], 
+        'dqqk2qt': old['dqqk2qt'], 
+        'sfjshsjc': '2', # 昨日是否接受核酸检测 否
+        'dyzymjzqk': old['dyzymjzqk'], 
+        'dyzjzsj': old['dyzjzsj'], 
+        'dyzwjzyy': old['dyzwjzyy'], 
+        'dezymjzqk': old['dezymjzqk'], 
+        'dezjzsj': old['dezjzsj'],
+        'dezwjzyy': old['dezwjzyy'], 
+        'dszymjzqk': old['dszymjzqk'], 
+        'dszjzsj':old['dszjzsj'], 
+        'dszwjzyy': old['dszwjzyy'],  
+        'gtshryjkzk': old['gtshryjkzk'], 
+        'extinfo': '',
+        'app_id': 'ucas'
+
+        # 'ismoved': 0,  # 如果前一天位置变化这个值会为1，第二天仍然获取到昨天的1，而事实上位置是没变化的，所以置0
         # 'ismoved': old['ismoved'],
-        'tw': old['tw'],
-        'bztcyy': old['bztcyy'],
+        # 'tw': old['tw'],
+        # 'bztcyy': old['bztcyy'],
         # 'sftjwh': old['sfsfbh'],  # 2020.9.16 del
         # 'sftjhb': old['sftjhb'],  # 2020.9.16 del
-        'sfcxtz': old['sfcxtz'],
-        'sfyyjc': old['sfyyjc'],
-        'jcjgqr': old['jcjgqr'],
-        # 'sfjcwhry': old['sfjcwhry'],  # 2020.9.16 del
-        # 'sfjchbry': old['sfjchbry'],  # 2020.9.16 del
-        'sfjcbh': old['sfjcbh'],
-        'jcbhlx': old['jcbhlx'],
-        'sfcyglq': old['sfcyglq'],
-        'gllx': old['gllx'],
-        'sfcxzysx': old['sfcxzysx'],
-        'old_szdd': old['szdd'],
-        'geo_api_info': old['old_city'],  # 保持昨天的结果
-        'old_city': old['old_city'],
-        'geo_api_infot': old['geo_api_infot'],
-        'date': datetime.now(tz=pytz.timezone("Asia/Shanghai")).strftime("%Y-%m-%d"),
-        'fjsj': old['fjsj'],  # 返京时间
-        'ljrq': old['ljrq'],  # 离京日期 add@2021.1.24
-        'qwhd': old['qwhd'],  # 去往何地 add@2021.1.24
-        'chdfj': old['chdfj'],  # 从何地返京 add@2021.1.24
-        'jcbhrq': old['jcbhrq'],
-        'glksrq': old['glksrq'],
-        'fxyy': old['fxyy'],
-        'jcjg': old['jcjg'],
-        'jcjgt': old['jcjgt'],
-        'qksm': old['qksm'],
-        'remark': old['remark'],
-        'jcjgqk': old['jcjgqk'],
-        'jcwhryfs': old['jcwhryfs'],
-        'jchbryfs': old['jchbryfs'],
-        'gtshcyjkzt': old['gtshcyjkzt'],  # add @2020.9.16
-        'jrsfdgzgfxdq': old['jrsfdgzgfxdq'],  # add @2020.9.16
-        'jrsflj': old['jrsflj'],  # add @2020.9.16
-        'app_id': 'ucas'
+        # 'sfcxtz': old['sfcxtz'],
+        # 'sfyyjc': old['sfyyjc'],
+        # 'jcjgqr': old['jcjgqr'],
+        # # 'sfjcwhry': old['sfjcwhry'],  # 2020.9.16 del
+        # # 'sfjchbry': old['sfjchbry'],  # 2020.9.16 del
+        # 'sfjcbh': old['sfjcbh'],
+        # 'jcbhlx': old['jcbhlx'],
+        # 'sfcyglq': old['sfcyglq'],
+        # 'gllx': old['gllx'],
+        # 'sfcxzysx': old['sfcxzysx'],
+        # 'old_szdd': old['szdd'],
+        # 'geo_api_info': old['old_city'],  # 保持昨天的结果
+        # 'old_city': old['old_city'],
+        # 'geo_api_infot': old['geo_api_infot'],
+        
+        # 'fjsj': old['fjsj'],  # 返京时间
+        # 'ljrq': old['ljrq'],  # 离京日期 add@2021.1.24
+        # 'qwhd': old['qwhd'],  # 去往何地 add@2021.1.24
+        # 'chdfj': old['chdfj'],  # 从何地返京 add@2021.1.24
+        # 'jcbhrq': old['jcbhrq'],
+        # 'glksrq': old['glksrq'],
+        # 'fxyy': old['fxyy'],
+        # 'jcjg': old['jcjg'],
+        # 'jcjgt': old['jcjgt'],
+        # 'qksm': old['qksm'],
+        # 'remark': old['remark'],
+        # 'jcjgqk': old['jcjgqk'],
+        # 'jcwhryfs': old['jcwhryfs'],
+        # 'jchbryfs': old['jchbryfs'],
+        # 'gtshcyjkzt': old['gtshcyjkzt'],  # add @2020.9.16
+        # 'jrsfdgzgfxdq': old['jrsfdgzgfxdq'],  # add @2020.9.16
+        # 'jrsflj': old['jrsflj'],  # add @2020.9.16
+       
     }
 
     check_data_msg = check_submit_data(new_daily)  # 检查上报结果
@@ -148,8 +178,8 @@ def submit(s: requests.Session, old: dict):
                 "{}".format(new_daily))
         print("提交数据存在问题，请手动打卡，问题原因： {}".format(check_data_msg))
         return
-
-    r = s.post("https://app.ucas.ac.cn/ncov/api/default/save", data=new_daily)
+    subscribe_url = "https://app.ucas.ac.cn/ucasncov/api/default/save"
+    r = s.post(subscribe_url, data=new_daily)
     if debug:
         from urllib.parse import parse_qs, unquote
         print("昨日信息:", json.dumps(old, ensure_ascii=False, indent=2))
@@ -162,7 +192,7 @@ def submit(s: requests.Session, old: dict):
     else:
         print("打卡失败，错误信息: ", r.json().get("m"))
 
-    message(api_key, sender_email, sender_email_passwd, receiver_email, result.get('m'), new_daily)
+        message(api_key, sender_email, sender_email_passwd, receiver_email, result.get('m'), new_daily)
 
 
 def check_submit_data(data: dict):
@@ -171,12 +201,12 @@ def check_submit_data(data: dict):
     """
     msg = []
     # 所在地点
-    if data['szdd'] != "国内":
-        msg.append("所在地点不是国内，请手动填报")
+    # if data['szdd'] != "国内":
+        # msg.append("所在地点不是国内，请手动填报")
 
     # 体温
-    if int(data['tw']) > 4:
-        msg.append("体温大于 37.3 度 ，请手动填报")
+    # if int(data['tw']) > 4:
+        # msg.append("体温大于 37.3 度 ，请手动填报")
 
     return ";".join(msg) if msg else None
 
@@ -196,7 +226,7 @@ def server_chan_message(key, title, body):
     微信通知打卡结果
     """
     # 错误的key也可以发送消息，无需处理 :)
-    msg_url = "https://sc.ftqq.com/{}.send?text={}&desp={}".format(key, title, body)
+    msg_url = "https://sctapi.ftqq.com/{}.send?title={}&desp={}".format(key, title, body)
     requests.get(msg_url)
 
 
@@ -236,14 +266,15 @@ def report(username, password):
     s.headers.update(header)
 
     print(datetime.now(tz=pytz.timezone("Asia/Shanghai")).strftime("%Y-%m-%d %H:%M:%S %Z"))
-    for i in range(randint(10, 600), 0, -1):
+    for i in range(randint(0,2), 0, -1):
         print("\r等待{}秒后填报".format(i), end='')
         sleep(1)
 
     cookie_file_name = Path("{}.json".format(hashlib.sha512(username.encode()).hexdigest()[:8]))
     login(s, username, password, cookie_file_name)
     yesterday = get_daily(s)
-    submit(s, yesterday)
+    print(yesterday)
+    # submit(s, yesterday)
 
 
 if __name__ == "__main__":
