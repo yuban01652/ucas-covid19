@@ -1,6 +1,10 @@
 # ucas-covid19
 国科大疫情防控每日填报助手，用于解决忘记填写企业微信中身体状况每日打卡的问题。
 
+目前定位、是否在校、是否接受核酸检测写死为
+在雁栖湖校区，是，否，如有不同请手动修改sub.py中的字段
+
+目前自动打卡时间为0:10
  
 # 注意
 本人不对因为滥用此程序造成的后果负责，**请在合理且合法的范围内使用本程序**。
@@ -40,7 +44,7 @@ ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 
 
-# 方法二： 使用 GitHub Actions（推荐使用）
+# 方法二： 使用 GitHub Actions（不推荐使用，可能导致github被封号）
 没有服务器的同学可以使用 GitHub Action 来进行运行此程序。
 
 **请勿**直接修改`sub.py`内的登录账号和密码，Github的公开仓库的内容可以被所有人查看。
@@ -125,7 +129,7 @@ pause
 - 2021年1月25日 重构了发送通知的代码
 - 2021年1月25日 添加了 github actions 缓存 cookies 的配置
 - 2021年1月27日 优化了取 github 环境变量的方式，减少未设置变量导致出错的概率；兼容 python 3.5 的 pathlib
-
+- 2022.8.22 修改以符合现有字段和post地址
 
 # 致谢
 - 感谢 [karuboniru](https://github.com/IanSmith123/ucas-covid19/pull/1) 提供的github actions 支持
@@ -143,7 +147,4 @@ Les1ie
 
 2020-4-5 23:56:52
 
-test on 21/8/9
-test on 21/9/1
-test on 22/8/9 x
-test
+

@@ -23,9 +23,9 @@ debug = False
 verify_cert = False
 
 # 全局变量，如果使用自己的服务器运行请根据需要修改 ->以下变量<-
-user = "ZZZ"  # sep 账号
+user = "XXX"  # sep 账号
 passwd = "YYY"  # sep 密码
-api_key = "XXX"  # 可选， server 酱的通知 api key
+api_key = "ZZZ"  # 可选， server 酱的通知 api key
 
 # 可选，如果需要邮件通知，那么修改下面五行 :)
 smtp_port = "SMTP_PORT"
@@ -95,6 +95,7 @@ def get_daily(s: requests.Session):
 
 
 def submit(s: requests.Session, old: dict):
+    address1 = '{"address":"北京市怀柔区","details":"怀北镇中国科学院大学雁栖湖校区","province":{"label":"北京市","value":""},"city":{"label":"","value":""},"area":{"label":"怀柔区","value":""}}'
     new_daily = {
         'date': datetime.now(tz=pytz.timezone("Asia/Shanghai")).strftime("%Y-%m-%d"),
         'realname': old['realname'],
@@ -103,12 +104,13 @@ def submit(s: requests.Session, old: dict):
         'zrzsdd': old['zrzsdd'],
         # 'szgj_api_info': old['szgj_api_info'],
         # 'old_sfzx': old['sfzx'],
-        'sfzx': old['sfzx'],
+        'sfzx': '1', #是否在校：雁栖湖校区
+        # 'sfzx': old['sfzx'],
         'dqszdd': old['dqszdd'],
-        'geo_api_infot': old['geo_api_infot'],
+        'geo_api_infot': address1, #写死
         'szgj': '',
         'szgj_select_info': {'id': 0, 'name': ''},
-        'geo_api_info': old['geo_api_info'],
+        'geo_api_info': address1, #写死
         'dqsfzzgfxdq': old['dqsfzzgfxdq'],
         'zgfxljs': old['zgfxljs'], 
         'tw': old['tw'], 
@@ -117,7 +119,7 @@ def submit(s: requests.Session, old: dict):
         'dqqk1qt': old['dqqk1qt'], 
         'dqqk2': old['dqqk2'], 
         'dqqk2qt': old['dqqk2qt'], 
-        'sfjshsjc': '2', # 昨日是否接受核酸检测 否
+        'sfjshsjc': '0', # 昨日是否接受核酸检测 否
         'dyzymjzqk': old['dyzymjzqk'], 
         'dyzjzsj': old['dyzjzsj'], 
         'dyzwjzyy': old['dyzwjzyy'], 
@@ -178,6 +180,7 @@ def submit(s: requests.Session, old: dict):
                 "{}".format(new_daily))
         print("提交数据存在问题，请手动打卡，问题原因： {}".format(check_data_msg))
         return
+
     subscribe_url = "https://app.ucas.ac.cn/ucasncov/api/default/save"
     r = s.post(subscribe_url, data=new_daily)
     if debug:
@@ -192,7 +195,7 @@ def submit(s: requests.Session, old: dict):
     else:
         print("打卡失败，错误信息: ", r.json().get("m"))
 
-        message(api_key, sender_email, sender_email_passwd, receiver_email, result.get('m'), new_daily)
+    # message(api_key, sender_email, sender_email_passwd, receiver_email, result.get('m'), new_daily)
 
 
 def check_submit_data(data: dict):
@@ -273,8 +276,8 @@ def report(username, password):
     cookie_file_name = Path("{}.json".format(hashlib.sha512(username.encode()).hexdigest()[:8]))
     login(s, username, password, cookie_file_name)
     yesterday = get_daily(s)
-    print(yesterday)
-    # submit(s, yesterday)
+    # print(yesterday)
+    submit(s, yesterday)
 
 
 if __name__ == "__main__":

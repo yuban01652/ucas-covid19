@@ -11,6 +11,7 @@ on:
   schedule:
     - cron: '10 16 * * *'
     # min hour * * * UTC+0
+    # 0:10 report
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
